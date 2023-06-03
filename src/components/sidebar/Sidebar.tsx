@@ -12,7 +12,6 @@ export function Sidebar() {
             </div>
             <footer>
                 <button>Editar seu perfil</button>
-                <p>vasco</p>
             </footer>
         </aside>
     )
