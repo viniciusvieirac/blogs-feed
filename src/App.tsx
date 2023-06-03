@@ -1,6 +1,7 @@
 import Header from "./components/header/Header"
 import styles from './App.module.css'
 import { Sidebar } from "./components/sidebar/Sidebar"
+import { Post } from "./components/post/Post"
 
 
 function App() {
@@ -12,7 +13,8 @@ function App() {
         <Sidebar />
       </aside>
       <main>
-        <h1>vasco da</h1>
+       <Post />
+       <Post />
       </main>
      </div>
     </div>
