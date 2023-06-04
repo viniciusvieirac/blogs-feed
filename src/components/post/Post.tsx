@@ -1,31 +1,56 @@
 import { Avatar } from '../avatar/Avatar'
 import { Comments } from '../comments/Comments'
 import style from './Post.module.css'
+import { Author, ContentParagraph, ContentLink } from './../../type';
+import { useState } from 'react';
 
-export function Post(){
+
+interface PostsProps {
+    author: Author;
+    content: (ContentParagraph | ContentLink)[];
+    publishedAt: Date;
+}
+
+export function Post({author, publishedAt, content}: PostsProps){
+    const [comments, setComments] = useState([
+        1,
+        2,
+    ])
+
+    const formattedPublishedAt = publishedAt.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setComments([...comments, comments.length + 1]);
+      }
     return(
         <article className={style.post}>
             <header>
                 <div className={style.author}>
-                <Avatar src="https://avatars.githubusercontent.com/u/118015999?v=4" />
+                <Avatar src={author.avatar} />
                      <div className={style.authorInfo}>
-                        <strong>Vinicius Vieira</strong>
-                        <span>Web Developer</span>
+                        <strong>{author.name}</strong>
+                        <span>{author.role}</span>
                      </div>
                 </div>
-                <time title='03 de Junho às 13:00h' dateTime='2023-06-03 13:00:00'>Publicado há 1h</time>
+                <time title='03 de Junho às 13:00h' dateTime='2023-06-03 13:00:00'>{ `Publicado em ${formattedPublishedAt}` }</time>
             </header>
             <div className={style.content}>
-                <p>Fala galeraa 👋</p>
-                <p>Acabei de subir mais um projeto no meu portifa. É um projeto que fiz no NLW Return, evento da Rocketseat. O nome do projeto é DoctorCare 🚀</p>
-                <p><a href=""> 👉 jane.design/doctorcare</a></p> {' '}
-                <p>
-                     <a href=""> #novoprojeto</a>{' '}
-                     <a href=""> #nlw</a>{' '}
-                     <a href=""> #rocketseat</a> {' '}   
-                </p>
+                {content.map((conteudo) => {
+                    if(conteudo.type === 'paragraph'){
+                        return <p>{conteudo.content}</p>
+                    } else if (conteudo.type === 'link'){
+                        return <p><a href=""> {conteudo.content}</a></p>
+                    }
+                })}
             </div>
-            <form className={style.commentForm}>
+            <form className={style.commentForm} onSubmit={handleSubmit}>
                 <strong>Deixe seu feedback</strong>
                 <textarea placeholder='Deixe seu comentário' />
                
@@ -34,9 +59,7 @@ export function Post(){
                     </footer>
             </form>
             <div className={style.commentsList}>
-                <Comments />
-                <Comments />
-                <Comments />
+                    {comments.map((comment) => <Comments content={comment} />)}
             </div>
         </article>
     )
