@@ -12,10 +12,9 @@ interface PostsProps {
 }
 
 export function Post({author, publishedAt, content}: PostsProps){
-    const [comments, setComments] = useState([
-        1,
-        2,
-    ])
+    const [comments, setComments] = useState<string[]>([])
+    const [newCommentText, setNewCommentText] = useState<string>('')
+
 
     const formattedPublishedAt = publishedAt.toLocaleString('pt-BR', {
         day: '2-digit',
@@ -25,10 +24,15 @@ export function Post({author, publishedAt, content}: PostsProps){
         minute: '2-digit',
       });
 
+      const handleNewComment = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setNewCommentText(event.target.value);
+      };
+    
       const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        setComments([...comments, comments.length + 1]);
-      }
+        event.preventDefault();
+        setComments([...comments, newCommentText]);
+        setNewCommentText('');
+      };
     return(
         <article className={style.post}>
             <header>
@@ -44,15 +48,20 @@ export function Post({author, publishedAt, content}: PostsProps){
             <div className={style.content}>
                 {content.map((conteudo) => {
                     if(conteudo.type === 'paragraph'){
-                        return <p>{conteudo.content}</p>
+                        return <p key={conteudo.content}>{conteudo.content}</p>
                     } else if (conteudo.type === 'link'){
-                        return <p><a href=""> {conteudo.content}</a></p>
+                        return <p key={conteudo.content}><a href=""> {conteudo.content}</a></p>
                     }
                 })}
             </div>
             <form className={style.commentForm} onSubmit={handleSubmit}>
                 <strong>Deixe seu feedback</strong>
-                <textarea placeholder='Deixe seu comentário' />
+                <textarea 
+                    placeholder='Deixe seu comentário'
+                    name='comment'
+                    value={newCommentText}
+                    onChange={handleNewComment}
+                 />
                
                     <footer>
                     <button type="submit">Comentar</button>
