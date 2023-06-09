@@ -20,6 +20,7 @@ type CommentType = {
 export function Post({ author, publishedAt, content }: PostsProps) {
   const [comments, setComments] = useState<CommentType[]>([]);
   const [newCommentText, setNewCommentText] = useState<string>('');
+  const [isCommentInvalid, setIsCommentInvalid] = useState<boolean>(false);
 
   const formattedPublishedAt = publishedAt.toLocaleString('pt-BR', {
     day: '2-digit',
@@ -35,6 +36,12 @@ export function Post({ author, publishedAt, content }: PostsProps) {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (newCommentText.trim() === '') {
+      setIsCommentInvalid(true);
+      return;
+    }
+    setIsCommentInvalid(false);
+    
     const newComment: CommentType = {
       id: comments.length + 1, // gera um novo ID para o comentário
       content: newCommentText,
@@ -42,14 +49,14 @@ export function Post({ author, publishedAt, content }: PostsProps) {
       createdAt: new Date(),
     };
     setComments([...comments, newComment]);
-    event.currentTarget.reset()
     setNewCommentText('');
   };
 
   const handleCommentInvalid = (
     event: React.FormEvent<HTMLTextAreaElement>
   ): void => {
-    event.currentTarget.setCustomValidity('Esse campo é obrigatório');
+    event.preventDefault();
+    setIsCommentInvalid(true);
   };
 
   const deleteComment = (comment: CommentType): void => {
@@ -57,8 +64,8 @@ export function Post({ author, publishedAt, content }: PostsProps) {
     setComments(removeComment);
   };
 
-  const commentEmpty = newCommentText.length === 0
-
+  const commentEmpty = newCommentText.trim() === '';
+  
   return (
     <article className={style.post}>
       <header>
@@ -100,6 +107,9 @@ export function Post({ author, publishedAt, content }: PostsProps) {
           onInvalid={handleCommentInvalid}
           required
         />
+        {isCommentInvalid && (
+          <span className={style.error}>Esse campo é obrigatório</span>
+        )}
         <footer>
           <button type="submit" disabled={commentEmpty}>Comentar</button>
         </footer>
