@@ -42,18 +42,22 @@ export function Post({ author, publishedAt, content }: PostsProps) {
       createdAt: new Date(),
     };
     setComments([...comments, newComment]);
-    event?.target.setCustomValidity('')
+    event.currentTarget.reset()
     setNewCommentText('');
   };
 
-  const handleCommentInvalid = () => {
-    event?.target.setCustomValidity('Esse campo é obrigatório')
-  }
+  const handleCommentInvalid = (
+    event: React.FormEvent<HTMLTextAreaElement>
+  ): void => {
+    event.currentTarget.setCustomValidity('Esse campo é obrigatório');
+  };
 
   const deleteComment = (comment: CommentType): void => {
     const removeComment = comments.filter((c) => c.id !== comment.id);
     setComments(removeComment);
   };
+
+  const commentEmpty = newCommentText.length === 0
 
   return (
     <article className={style.post}>
@@ -97,7 +101,7 @@ export function Post({ author, publishedAt, content }: PostsProps) {
           required
         />
         <footer>
-          <button type="submit">Comentar</button>
+          <button type="submit" disabled={commentEmpty}>Comentar</button>
         </footer>
       </form>
       <div className={style.commentsList}>
